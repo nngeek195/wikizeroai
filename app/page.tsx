@@ -135,15 +135,23 @@ export default function LoginPage() {
           opacity: 1;
           transform: scale(1.5);
         }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .magic-glow {
+            width: 200px;
+            height: 200px;
+          }
+        }
       `}</style>
 
       <main className="flex min-h-screen animated-gradient relative overflow-hidden">
 
         {/* LEFT: Branding + Auth */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative z-20">
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 relative z-20">
           <div className="relative z-10 text-center w-full max-w-md">
-            {/* Logo Container with Lightning */}
-            <div className="relative w-100 h-100 mx-auto mb-6 rounded-full shadow-2xl flex items-center justify-center float-animation bg-white/80 backdrop-blur-sm border border-white/50 overflow-hidden">
+            {/* Logo Container with Lightning - Made responsive */}
+            <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto mb-6 rounded-full shadow-2xl flex items-center justify-center float-animation bg-white/80 backdrop-blur-sm border border-white/50 overflow-hidden">
 
               {/* 1. Lightning Animation (Background Layer) */}
               <div className="absolute inset-0 z-0 flex items-center justify-center opacity-90 pointer-events-none">
@@ -151,33 +159,33 @@ export default function LoginPage() {
                   src="https://lottie.host/e524613e-2636-4596-bad9-4bb6ef7ac511/T7EHHzxbmG.lottie"
                   autoplay
                   loop
-                  style={{ width: '100%', height: '100%', transform: 'scale(1.2)' }} // Scale 1.2 makes it fill the circle nicely
+                  style={{ width: '100%', height: '100%', transform: 'scale(1.2)' }}
                 />
               </div>
 
-              {/* 2. The Logo Image (Foreground Layer) */}
+              {/* 2. The Logo Image (Foreground Layer) - Made responsive */}
               <div className="relative z-10">
                 <Image
                   src="/logo.png"
                   alt="WikiZero-AI Logo"
-                  width={290}
-                  height={290}
-                  className="rounded-full object-cover"
+                  width={200}
+                  height={200}
+                  className="rounded-full object-cover w-3/4 h-3/4"
                 />
               </div>
 
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight mb-3 bg-gradient-to-r from-pink-600 to-blue-600 bg-clip-text text-transparent">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight mb-3 bg-gradient-to-r from-pink-600 to-blue-600 bg-clip-text text-transparent">
               Create your personal AI chatbot.
             </h1>
-            <p className="text-base md:text-lg text-gray-700 font-medium mb-15">
-
+            <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mb-6 sm:mb-8 md:mb-10">
+              {/* You can add a subtitle here if needed */}
             </p>
 
             <button
               onClick={handleGoogleSignIn}
-              className="flex items-center justify-center mx-auto w-full px-6 py-3 font-medium text-gray-700 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-50 hover:shadow-md transition-all duration-300 transform hover:scale-105"
+              className="flex items-center justify-center mx-auto w-full px-4 sm:px-6 py-3 font-medium text-gray-700 bg-white border border-gray-300 rounded-full shadow-sm hover:bg-gray-50 hover:shadow-md transition-all duration-300 transform hover:scale-105"
               aria-label="Sign in with Google"
             >
               {/* Official Google Colors SVG */}
@@ -204,11 +212,11 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* RIGHT: Sequential Lottie Animations with Magic Transition */}
+        {/* RIGHT: Sequential Lottie Animations with Magic Transition - Made responsive */}
         <aside className="hidden lg:flex w-1/2 h-screen items-center justify-center relative">
 
-          {/* This div acts as the center point for our animations */}
-          <div className="w-[500px] h-[500px] relative flex items-center justify-center">
+          {/* This div acts as the center point for our animations - Made responsive */}
+          <div className="w-80 h-80 md:w-96 md:h-96 xl:w-[500px] xl:h-[500px] relative flex items-center justify-center">
 
             {/* The Magic Glow Blob (Behind everything) */}
             <div className={`magic-glow ${isTransitioning ? 'glow-active' : ''}`} />
@@ -232,10 +240,12 @@ export default function LoginPage() {
 
         </aside>
 
-        {/* FOOTER */}
-        <footer className="absolute bottom-4 left-0 right-0 flex justify-center z-20">
-          <div>
-            <a href="https://www.linkedin.com/in/niranga-nayanajith" className="text-sm text-gray-700" target="blank">Powered by WikiZero - Niranga Nayanajith.</a>
+        {/* FOOTER - Made responsive */}
+        <footer className="absolute bottom-4 left-0 right-0 flex justify-center z-20 px-4">
+          <div className="text-center">
+            <a href="https://www.linkedin.com/in/niranga-nayanajith" className="text-xs sm:text-sm text-gray-700" target="_blank" rel="noopener noreferrer">
+              Powered by WikiZero - Niranga Nayanajith.
+            </a>
           </div>
         </footer>
       </main>
