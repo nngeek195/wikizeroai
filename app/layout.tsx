@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   },
   description: "Build a custom AI assistant trained on your skills, bio, and personality. Share it with recruiters, clients, or friends.",
   keywords: ["AI", "Digital Twin", "Chatbot Builder", "Personal AI", "Portfolio AI"],
+  verification: {
+    google: "Krn0xX92X-iQhPM6D",
+  },
   openGraph: {
     title: "WikiZero AI - Create Your Digital Twin",
     description: "Build a custom AI assistant trained on your skills and bio.",
