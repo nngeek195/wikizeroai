@@ -1,43 +1,56 @@
-import { MetadataRoute } from 'next';
-import { adminDb } from '@/lib/firebase-admin'; // Your existing firebase import
+import { NextResponse } from 'next/server';
+import { adminDb } from '@/lib/firebase-admin';
 
-// Update this to your actual website URL
-const BASE_URL = 'https://wikizeroai.vercel.app';
+export async function GET() {
+  // ⚠️ Replace with your actual production URL
+  const baseUrl = 'https://wikizeroai.com';
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // 1. Fetch all users/bots from Firebase
-  // Note: This runs on the server when Google requests your sitemap
-  const usersRef = adminDb.collection("users");
-  const snapshot = await usersRef.get();
+  try {
+    // 1. Fetch all users/bots from Firebase
+    const usersRef = adminDb.collection("users");
+    const snapshot = await usersRef.get();
 
-  // 2. Map the data to the sitemap format
-  const botUrls = snapshot.docs
-    .map((doc) => {
-      const data = doc.data();
-      const botId = data.config?.botId;
+    // 2. Generate the XML string manually
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      <url>
+        <loc>${baseUrl}</loc>
+        <lastmod>${new Date().toISOString()}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+      </url>
 
-      // If the user hasn't set up a botId, skip them
-      if (!botId) return null;
+      ${snapshot.docs
+        .map((doc) => {
+          const data = doc.data();
+          const botId = data.config?.botId;
 
-      return {
-        url: `${BASE_URL}/chat/${botId}`,
-        lastModified: new Date(), // Or use a field from firebase like 'updatedAt'
-        changeFrequency: 'daily' as const,
-        priority: 0.8,
-      };
-    })
-    .filter((item): item is NonNullable<typeof item> => item !== null);
+          // Skip if no botId exists
+          if (!botId) return null;
 
-  // 3. Add your static pages (Home, About, etc.)
-  const routes = [
-    {
-      url: BASE_URL,
-      lastModified: new Date(),
-      changeFrequency: 'daily' as const,
-      priority: 1,
-    },
-    // Add other static pages here if you have them
-  ];
+          return `
+      <url>
+        <loc>${baseUrl}/chat/${botId}</loc>
+        <lastmod>${new Date().toISOString()}</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+      </url>`;
+        })
+        .filter((item) => item !== null) // Remove failed entries
+        .join('')}
+    </urlset>`;
 
-  return [...routes, ...botUrls];
+    // 3. Return the response with the correct XML headers
+    return new NextResponse(xml, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/xml',
+        'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=59', // Cache for 1 hour
+      },
+    });
+
+  } catch (error) {
+    console.error("Sitemap generation error:", error);
+    return new NextResponse('Error generating sitemap', { status: 500 });
+  }
 }
