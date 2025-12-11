@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Block Google from indexing private user dashboards
+Disallow: /dashboard/
+Disallow: /settings/
+Disallow: /api/
+
+# Point Google to your dynamic sitemap
+Sitemap: https://wikizero-ai.vercel.app/sitemap.xml
