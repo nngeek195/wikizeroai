@@ -120,8 +120,8 @@ export default function LoginPage() {
         /* 4. The Magic Glow Behind the Animation */
         .magic-glow {
           position: absolute;
-          width: 300px;
-          height: 300px;
+          width: 255px; /* Reduced from 300px by 15% */
+          height: 255px; /* Reduced from 300px by 15% */
           background: radial-gradient(circle, rgba(255,0,128,0.2) 0%, rgba(0,212,255,0.2) 50%, rgba(255,255,255,0) 70%);
           border-radius: 50%;
           transition: all 0.6s ease;
@@ -139,8 +139,8 @@ export default function LoginPage() {
         /* Responsive adjustments */
         @media (max-width: 768px) {
           .magic-glow {
-            width: 200px;
-            height: 200px;
+            width: 170px; /* Reduced from 200px by 15% */
+            height: 170px; /* Reduced from 200px by 15% */
           }
         }
       `}</style>
@@ -150,8 +150,8 @@ export default function LoginPage() {
         {/* LEFT: Branding + Auth */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 relative z-20">
           <div className="relative z-10 text-center w-full max-w-md">
-            {/* Logo Container with Lightning - Made responsive */}
-            <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 mx-auto mb-6 rounded-full shadow-2xl flex items-center justify-center float-animation bg-white/80 backdrop-blur-sm border border-white/50 overflow-hidden">
+            {/* Logo Container with Lightning - Made responsive and 15% smaller */}
+            <div className="relative w-[217px] h-[217px] sm:w-[244px] sm:h-[244px] md:w-[272px] md:h-[272px] lg:w-[326px] lg:h-[326px] mx-auto mb-6 rounded-full shadow-2xl flex items-center justify-center float-animation bg-white/80 backdrop-blur-sm border border-white/50 overflow-hidden">
 
               {/* 1. Lightning Animation (Background Layer) */}
               <div className="absolute inset-0 z-0 flex items-center justify-center opacity-90 pointer-events-none">
@@ -163,14 +163,14 @@ export default function LoginPage() {
                 />
               </div>
 
-              {/* 2. The Logo Image (Foreground Layer) - Made responsive */}
-              <div className="relative z-10">
+              {/* 2. The Logo Image (Foreground Layer) - Made responsive, centered, and 15% smaller */}
+              <div className="absolute inset-0 z-10 flex items-center justify-center">
                 <Image
                   src="/logo.png"
                   alt="WikiZero-AI Logo"
-                  width={200}
-                  height={200}
-                  className="rounded-full object-cover w-3/4 h-3/4"
+                  width={170} /* Reduced from 200px by 15% */
+                  height={170} /* Reduced from 200px by 15% */
+                  className="rounded-full object-cover"
                 />
               </div>
 
@@ -212,11 +212,11 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* RIGHT: Sequential Lottie Animations with Magic Transition - Made responsive */}
+        {/* RIGHT: Sequential Lottie Animations with Magic Transition - Made responsive and 15% smaller */}
         <aside className="hidden lg:flex w-1/2 h-screen items-center justify-center relative">
 
-          {/* This div acts as the center point for our animations - Made responsive */}
-          <div className="w-80 h-80 md:w-96 md:h-96 xl:w-[500px] xl:h-[500px] relative flex items-center justify-center">
+          {/* This div acts as the center point for our animations - Made responsive and 15% smaller */}
+          <div className="w-[272px] h-[272px] md:w-[326px] md:h-[326px] xl:w-[425px] xl:h-[425px] relative flex items-center justify-center">
 
             {/* The Magic Glow Blob (Behind everything) */}
             <div className={`magic-glow ${isTransitioning ? 'glow-active' : ''}`} />
