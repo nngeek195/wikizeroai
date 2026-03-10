@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { auth, googleProvider, db } from "@/lib/firebase";
+import { auth, googleProvider } from "@/lib/firebase";
 import { signInWithPopup, onAuthStateChanged } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
 import dynamic from "next/dynamic";
 
 // Dynamically import the player
@@ -53,31 +52,19 @@ export default function LoginPage() {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         try {
-          const userDocRef = doc(db, "users", currentUser.uid);
-          const userDoc = await getDoc(userDocRef);
-
-          if (!userDoc.exists()) {
-            await setDoc(userDocRef, {
-              uid: currentUser.uid,
+          const token = await currentUser.getIdToken();
+          await fetch('/api/user/init', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
               email: currentUser.email,
               displayName: currentUser.displayName,
               photoURL: currentUser.photoURL,
-              botId: `bot-${currentUser.uid.substring(0, 8)}`,
-              geminiApiKey: "",
-              profile: {
-                bio: "I'm new to WikiZero! Please update my bio.",
-                skills: "Edit my skills in the dashboard.",
-                linkedin: "",
-                github: "",
-                facebook: "",
-                cvLink: "",
-                whatsapp: "",
-                aiTone: "",
-                aiExpertise: "",
-                aiOpinions: "",
-              },
-            });
-          }
+            }),
+          });
         } catch (firestoreError) {
           console.error("Error initializing user profile:", firestoreError);
         }

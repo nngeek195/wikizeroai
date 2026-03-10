@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import Image from "next/image";
 import { generateBotHtml } from "@/lib/bot-templates/default";
@@ -88,31 +88,26 @@ export default function DashboardPage() {
                         setApiKeyStatus("Missing");
                     }
                 } else {
-                    // Document missing – create it so the user can use the dashboard
-                    // (can happen if Firestore write during sign-up failed transiently).
+                    // Document missing – create it via the server-side API so the
+                    // Firebase Admin SDK is used (bypasses client Firestore rules).
                     const defaultBotId = `bot-${currentUser.uid.substring(0, 8)}`;
                     try {
-                        await setDoc(userDocRef, {
-                            uid: currentUser.uid,
-                            email: currentUser.email,
-                            displayName: currentUser.displayName,
-                            photoURL: currentUser.photoURL,
-                            botId: defaultBotId,
-                            geminiApiKey: "",
-                            profile: {
-                                bio: "I'm new to WikiZero! Please update my bio.",
-                                skills: "Edit my skills in the dashboard.",
-                                linkedin: "",
-                                github: "",
-                                facebook: "",
-                                cvLink: "",
-                                whatsapp: "",
-                                twitter: "",
-                                aiTone: "",
-                                aiExpertise: "",
-                                aiOpinions: "",
+                        const token = await currentUser.getIdToken();
+                        const response = await fetch('/api/user/init', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${token}`,
                             },
+                            body: JSON.stringify({
+                                email: currentUser.email,
+                                displayName: currentUser.displayName,
+                                photoURL: currentUser.photoURL,
+                            }),
                         });
+                        if (!response.ok) {
+                            throw new Error('Failed to initialize user document.');
+                        }
                         setBotId(defaultBotId);
                         setApiKeyStatus("Missing");
                     } catch (createError) {
@@ -139,7 +134,19 @@ export default function DashboardPage() {
         setLoadingProfile(true);
         setProfileMessage("Saving...");
         try {
-            await updateDoc(doc(db, "users", user.uid), { profile: profile });
+            const token = await user.getIdToken();
+            const response = await fetch('/api/user/saveProfile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ profile }),
+            });
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Failed to save profile.');
+            }
             setProfileMessage("Saved!");
         } catch (error) {
             setProfileMessage("Error saving.");
