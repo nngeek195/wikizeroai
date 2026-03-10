@@ -17,6 +17,7 @@ type UserProfile = {
     facebook: string;
     cvLink: string;
     whatsapp: string;
+    twitter: string;
     aiTone: string;
     aiExpertise: string;
     aiOpinions: string;
@@ -28,7 +29,7 @@ const Icons = {
     LogOut: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>,
     User: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>,
     Key: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11.536 9.464l-2.828 2.829-1.415-1.414 2.829-2.828-1.415-1.414 4.242-4.242a6 6 0 018.486 8.486z" /></svg>,
-    Bot: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
+    Bot: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>,
     Check: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>,
     Copy: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>,
     ExternalLink: () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
@@ -39,7 +40,7 @@ export default function DashboardPage() {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<UserProfile>({
         bio: "", skills: "", linkedin: "", github: "", facebook: "",
-        cvLink: "", whatsapp: "", aiTone: "", aiExpertise: "", aiOpinions: "",
+        cvLink: "", whatsapp: "", twitter: "", aiTone: "", aiExpertise: "", aiOpinions: "",
     });
 
     const [botId, setBotId] = useState("");
@@ -104,6 +105,7 @@ export default function DashboardPage() {
                                 facebook: "",
                                 cvLink: "",
                                 whatsapp: "",
+                                twitter: "",
                                 aiTone: "",
                                 aiExpertise: "",
                                 aiOpinions: "",
@@ -163,13 +165,17 @@ export default function DashboardPage() {
                 },
                 body: JSON.stringify({ apiKey: apiKey }),
             });
-            if (!response.ok) throw new Error("Failed");
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to save API key.");
+            }
 
             setKeyMessage("Success!");
             setApiKey("****************");
             setApiKeyStatus("Active");
         } catch (error) {
-            setKeyMessage("Invalid Key");
+            const message = error instanceof Error ? error.message : "Failed to validate API key. Please try again.";
+            setKeyMessage(message);
             setApiKeyStatus("Invalid");
         }
         setLoadingKey(false);
@@ -342,6 +348,13 @@ export default function DashboardPage() {
                                             />
                                         </label>
                                         <label className="block">
+                                            <span className="text-sm font-medium text-slate-700">Twitter / X</span>
+                                            <input type="url" name="twitter" value={profile.twitter} onChange={handleChange}
+                                                className="mt-1 block w-full rounded-xl border-slate-200 bg-slate-50 focus:border-pink-500 focus:ring-pink-500 shadow-sm sm:text-sm p-3"
+                                                placeholder="https://twitter.com/username"
+                                            />
+                                        </label>
+                                        <label className="block">
                                             <span className="text-sm font-medium text-slate-700">WhatsApp</span>
                                             <input type="tel" name="whatsapp" value={profile.whatsapp} onChange={handleChange}
                                                 className="mt-1 block w-full rounded-xl border-slate-200 bg-slate-50 focus:border-pink-500 focus:ring-pink-500 shadow-sm sm:text-sm p-3"
@@ -363,6 +376,13 @@ export default function DashboardPage() {
                                                 <input type="text" name="aiTone" value={profile.aiTone} onChange={handleChange}
                                                     className="mt-1 block w-full rounded-xl border-slate-200 bg-slate-50 focus:border-pink-500 focus:ring-pink-500 shadow-sm sm:text-sm p-3"
                                                     placeholder="Professional, Friendly, Witty..."
+                                                />
+                                            </label>
+                                            <label className="block">
+                                                <span className="text-sm font-medium text-slate-700">Expertise</span>
+                                                <input type="text" name="aiExpertise" value={profile.aiExpertise} onChange={handleChange}
+                                                    className="mt-1 block w-full rounded-xl border-slate-200 bg-slate-50 focus:border-pink-500 focus:ring-pink-500 shadow-sm sm:text-sm p-3"
+                                                    placeholder="Full-stack development, Machine Learning..."
                                                 />
                                             </label>
                                             <label className="block">
