@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { auth, googleProvider, db } from "@/lib/firebase";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, onAuthStateChanged } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import dynamic from "next/dynamic";
 
@@ -47,33 +47,57 @@ export default function LoginPage() {
     }, 600);
   };
 
+  // Redirect to dashboard if the user is already authenticated (or once they sign in).
+  useEffect(() => {
+    let isMounted = true;
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        try {
+          const userDocRef = doc(db, "users", currentUser.uid);
+          const userDoc = await getDoc(userDocRef);
+
+          if (!userDoc.exists()) {
+            await setDoc(userDocRef, {
+              uid: currentUser.uid,
+              email: currentUser.email,
+              displayName: currentUser.displayName,
+              photoURL: currentUser.photoURL,
+              profile: {
+                bio: "I'm new to WikiZero! Please update my bio.",
+                skills: "Edit my skills in the dashboard.",
+                linkedin: "",
+                github: "",
+                facebook: "",
+                cvLink: "",
+                whatsapp: "",
+                aiTone: "",
+                aiExpertise: "",
+                aiOpinions: "",
+              },
+              config: {
+                botId: `bot-${currentUser.uid.substring(0, 8)}`,
+                geminiApiKey: null,
+              },
+            });
+          }
+        } catch (firestoreError) {
+          console.error("Error initializing user profile:", firestoreError);
+        }
+        if (isMounted) {
+          router.push("/dashboard");
+        }
+      }
+    });
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, [router]);
+
   const handleGoogleSignIn = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-
-      const userDocRef = doc(db, "users", user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      if (!userDoc.exists()) {
-        await setDoc(userDocRef, {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          profile: {
-            bio: "I'm new to WikiZero! Please update my bio.",
-            skills: "Edit my skills in the dashboard.",
-            linkedin: "",
-            github: "",
-          },
-          config: {
-            botId: `bot-${user.uid.substring(0, 8)}`,
-            geminiApiKey: null,
-          },
-        });
-      }
-      router.push("/dashboard");
+      await signInWithPopup(auth, googleProvider);
+      // Navigation is handled by the onAuthStateChanged observer above.
     } catch (error) {
       console.error("Error during Google sign-in: ", error);
     }
