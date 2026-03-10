@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged, signOut, type User } from "firebase/auth";
 import Image from "next/image";
 import { generateBotHtml } from "@/lib/bot-templates/default";
@@ -87,7 +87,38 @@ export default function DashboardPage() {
                         setApiKeyStatus("Missing");
                     }
                 } else {
-                    router.push("/");
+                    // Document missing – create it so the user can use the dashboard
+                    // (can happen if Firestore write during sign-up failed transiently).
+                    const defaultBotId = `bot-${currentUser.uid.substring(0, 8)}`;
+                    try {
+                        await setDoc(userDocRef, {
+                            uid: currentUser.uid,
+                            email: currentUser.email,
+                            displayName: currentUser.displayName,
+                            photoURL: currentUser.photoURL,
+                            profile: {
+                                bio: "I'm new to WikiZero! Please update my bio.",
+                                skills: "Edit my skills in the dashboard.",
+                                linkedin: "",
+                                github: "",
+                                facebook: "",
+                                cvLink: "",
+                                whatsapp: "",
+                                aiTone: "",
+                                aiExpertise: "",
+                                aiOpinions: "",
+                            },
+                            config: {
+                                botId: defaultBotId,
+                                geminiApiKey: null,
+                            },
+                        });
+                        setBotId(defaultBotId);
+                        setApiKeyStatus("Missing");
+                    } catch (createError) {
+                        console.error("Error creating user document:", createError);
+                        router.push("/");
+                    }
                 }
             } else {
                 router.push("/");
