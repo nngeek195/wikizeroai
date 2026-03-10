@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
         // 1. Find User
         const usersRef = adminDb.collection("users");
-        const q = usersRef.where("config.botId", "==", botId);
+        const q = usersRef.where("botId", "==", botId);
         const querySnapshot = await q.get();
 
         if (querySnapshot.empty) {
@@ -34,11 +34,10 @@ export async function POST(req: NextRequest) {
         }
 
         const userData = querySnapshot.docs[0].data();
-        const config = userData.config;
         const profile = userData.profile;
 
         // 2. Check Configuration
-        const apiKey = config.geminiApiKey;
+        const apiKey = userData.geminiApiKey;
         if (!apiKey) {
             return NextResponse.json({ error: "Bot is not configured by its owner." }, { status: 500, headers });
         }

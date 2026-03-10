@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
         // --- 4. SAVE THE VALID KEY (Existing code) ---
         const userDocRef = adminDb.collection('users').doc(uid);
         await userDocRef.update({
-            'config.geminiApiKey': apiKey,
+            geminiApiKey: apiKey,
         });
 
         return NextResponse.json({ message: 'API key saved and validated successfully!' });
