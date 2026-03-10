@@ -117,7 +117,7 @@ export default function DashboardPage() {
                         setApiKeyStatus("Missing");
                     } catch (createError) {
                         console.error("Error creating user document:", createError);
-                        router.push("/");
+                        setProfileMessage("Error loading your profile. Please refresh the page.");
                     }
                 }
             } else {
