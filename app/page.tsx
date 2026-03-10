@@ -62,6 +62,8 @@ export default function LoginPage() {
               email: currentUser.email,
               displayName: currentUser.displayName,
               photoURL: currentUser.photoURL,
+              botId: `bot-${currentUser.uid.substring(0, 8)}`,
+              geminiApiKey: "",
               profile: {
                 bio: "I'm new to WikiZero! Please update my bio.",
                 skills: "Edit my skills in the dashboard.",
@@ -73,10 +75,6 @@ export default function LoginPage() {
                 aiTone: "",
                 aiExpertise: "",
                 aiOpinions: "",
-              },
-              config: {
-                botId: `bot-${currentUser.uid.substring(0, 8)}`,
-                geminiApiKey: null,
               },
             });
           }

@@ -78,10 +78,10 @@ export default function DashboardPage() {
                     const data = userDoc.data();
                     setProfile((prev) => ({ ...prev, ...data.profile }));
 
-                    const id = data.config.botId || `bot-${currentUser.uid.substring(0, 8)}`;
+                    const id = data.botId || `bot-${currentUser.uid.substring(0, 8)}`;
                     setBotId(id);
 
-                    if (data.config.geminiApiKey) {
+                    if (data.geminiApiKey) {
                         setApiKeyStatus("Active");
                         setApiKey("****************");
                     } else {
@@ -97,6 +97,8 @@ export default function DashboardPage() {
                             email: currentUser.email,
                             displayName: currentUser.displayName,
                             photoURL: currentUser.photoURL,
+                            botId: defaultBotId,
+                            geminiApiKey: "",
                             profile: {
                                 bio: "I'm new to WikiZero! Please update my bio.",
                                 skills: "Edit my skills in the dashboard.",
@@ -109,10 +111,6 @@ export default function DashboardPage() {
                                 aiTone: "",
                                 aiExpertise: "",
                                 aiOpinions: "",
-                            },
-                            config: {
-                                botId: defaultBotId,
-                                geminiApiKey: null,
                             },
                         });
                         setBotId(defaultBotId);

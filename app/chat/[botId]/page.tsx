@@ -11,7 +11,7 @@ type Props = {
 async function getBotData(botId: string) {
     try {
         const usersRef = adminDb.collection("users");
-        const q = usersRef.where("config.botId", "==", botId).limit(1);
+        const q = usersRef.where("botId", "==", botId).limit(1);
         const querySnapshot = await q.get();
 
         if (querySnapshot.empty) return null;
